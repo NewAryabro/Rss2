@@ -5,7 +5,7 @@ permissions:
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "*/5 * * * *"  # every 5 mins
   workflow_dispatch:
 
 jobs:
@@ -22,16 +22,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pip install cloudscraper beautifulsoup4 lxml
 
       - name: Run scraper
         run: |
           python tamilmv_rss.py
 
-      - name: Commit & Push RSS
+      - name: Commit & Push RSS if changed
         run: |
           git config --global user.name "rss-bot"
           git config --global user.email "rss@bot.com"
           git add tamilmv.xml
-          git commit -m "Update TamilMV RSS" || echo "No changes"
+          git diff --cached --quiet || git commit -m "Update TamilMV RSS"
           git push
